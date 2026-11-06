@@ -50,5 +50,21 @@ internal const val BASE64_JS = """
     }
     return out;
   };
+
+  if (typeof Uint8Array.fromBase64 !== 'function') {
+    Uint8Array.fromBase64 = function (input) {
+      var binary = global.atob(input);
+      var bytes = new Uint8Array(binary.length);
+      for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i) & 255;
+      return bytes;
+    };
+  }
+  if (typeof Uint8Array.prototype.toBase64 !== 'function') {
+    Uint8Array.prototype.toBase64 = function () {
+      var binary = '';
+      for (var i = 0; i < this.length; i++) binary += String.fromCharCode(this[i] & 255);
+      return global.btoa(binary);
+    };
+  }
 })(typeof globalThis !== 'undefined' ? globalThis : this);
 """
